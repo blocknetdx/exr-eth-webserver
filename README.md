@@ -4,11 +4,9 @@
 
 **Example calls:**
 
-* `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '["0xc94770007dda54cF92009BFF0dE90c06F603a0
-9f","latest"]' 127.0.0.1:9090/xrs/eth_getBalance`
+* `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '["0xc94770007dda54cF92009BFF0dE90c06F603a09f","latest"]' 127.0.0.1:9090/xrs/eth_getBalance`
 
-* `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '["0xc94770007dda54cF92009BFF0dE90c06F603a0
-9f","latest"]' 127.0.0.1:9090/xrs/eth_blockNumber`
+* `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '[]' 127.0.0.1:9090/xrs/eth_blockNumber`
 
 **To do:**
 
