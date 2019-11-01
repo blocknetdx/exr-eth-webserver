@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 app.config['JSON_SORT_KEYS'] = False
 
-url='http://[ip]:[port]' #example: 'http://localhost:8545'
+url = 'http://[ip]:[port]' #example: 'http://localhost:8545'
 #url = 'https://mainnet.infura.io/v3/<api_key>' #infura testing
 headers = {'Content-Type': 'application/json',}
 
