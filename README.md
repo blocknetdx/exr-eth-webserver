@@ -59,6 +59,5 @@
 
 **To Do:**
 
-* HTTP error handling
 * Optional parameters
 * XR payments
