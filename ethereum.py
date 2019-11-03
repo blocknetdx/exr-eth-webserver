@@ -5,9 +5,42 @@ app = Flask(__name__)
 
 app.config['JSON_SORT_KEYS'] = False
 
-url = 'http://[ip]:[port]' #example: 'http://localhost:8545'
-#url = 'https://mainnet.infura.io/v3/<api_key>' #infura testing
+# Ethereum Node RPC URL Eg. http://localhost:8545
+url = 'http://[ip]:[port]'
+
+# Accepts Infura URL API Endpoint
+#url = 'https://mainnet.infura.io/v3/<api_key>'
+
+# All requests require this header
 headers = {'Content-Type': 'application/json',}
+
+# Error Handling
+@app.errorhandler(400)
+def bad_request_error(error):
+	response = jsonify({
+		'code': 1004,
+		'error': 'Bad Request: Incorrect or no data parameters present'
+		})
+	return response
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+	response = jsonify({
+		'code': 1002,
+		'error': 'Internal Server Error: failed to connect to Ethereum Node'
+		})
+	return response
+
+
+@app.errorhandler(401)
+def unauthorized_error(error):
+	response = jsonify({
+		'code': 1001,
+		'error': 'Unauthorized User Access'
+		})
+	return response
+
 
 @app.route('/xrs/eth_accounts', methods = ['POST'])
 def api_eth_accounts():
@@ -36,7 +69,11 @@ def api_eth_call():
 	if len(payload) == 7:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 7'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 7'
+		})
+		return payload_error
 
 	From = payload[0]
 	to = payload[1]
@@ -47,8 +84,11 @@ def api_eth_call():
 	block_parameter = payload[6]
 	data = '{"jsonrpc":"2.0","method":"eth_call","params": [{"from": "'+From+'","to": "'+to+'","gas": "'+gas+'","gasPrice": "'+gasPrice+'","value": "'+value+'","data": "'+eth_data+'"}, "'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_chainId', methods = ['POST'])
@@ -69,7 +109,11 @@ def api_eth_estimateGas():
 	if len(payload) == 6:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 6'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 6'
+		})
+		return payload_error
 
 	From = payload[0]
 	to = payload[1]
@@ -79,8 +123,11 @@ def api_eth_estimateGas():
 	eth_data = payload[5]
 	data = '{"jsonrpc":"2.0","method":"eth_estimateGas","params": [{"from": "'+From+'","to": "'+to+'","gas": "'+gas+'","gasPrice": "'+gasPrice+'","value": "'+value+'","data": "'+eth_data+'"}],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_gasPrice', methods = ['POST'])
@@ -101,14 +148,21 @@ def api_eth_getBalance():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	address = payload[0]
 	block_parameter = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getBalance","params": ["'+address+'","'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getBlockByHash', methods = ['POST'])
@@ -120,14 +174,21 @@ def api_eth_getBlockByHash():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	block_hash = payload[0]
 	show_tx_details = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getBlockByHash","params": ["'+block_hash+'",'+show_tx_details+'],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getBlockByNumber', methods = ['POST'])
@@ -139,14 +200,21 @@ def api_eth_getBlockByNumber():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	block_parameter = payload[0]
 	show_tx_details = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params": ["'+block_parameter+'",'+show_tx_details+'],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getBlockTransactionCountByHash', methods = ['POST'])
@@ -158,12 +226,20 @@ def api_eth_getBlockTransactionCountByHash():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	block_hash = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByHash","params": ["'+block_hash+'"],"id":1}'
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getBlockTransactionCountByNumber', methods = ['POST'])
@@ -175,13 +251,20 @@ def api_eth_getBlockTransactionCountByNumber():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	block_parameter = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getBlockTransactionCountByNumber","params": ["'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getCode', methods = ['POST'])
@@ -193,14 +276,21 @@ def api_eth_getCode():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	address = payload[0]
 	block_parameter = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getCode","params": ["'+address+'","'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getLogs', methods = ['POST'])
@@ -217,15 +307,22 @@ def api_eth_getStorageAt():
 	if len(payload) == 3:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 3'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 3'
+		})
+		return payload_error
 
 	address = payload[0]
 	storage_position = payload[1]
 	block_parameter = payload[2]
 	data = '{"jsonrpc":"2.0","method":"eth_getStorageAt","params": ["'+address+'", "'+storage_position+'","'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getTransactionByBlockHashAndIndex', methods = ['POST'])
@@ -237,14 +334,21 @@ def api_eth_getTransactionByBlockHashAndIndex():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	block_hash = payload[0]
 	tx_index_position = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getTransactionByBlockHashAndIndex","params": ["'+block_hash+'","'+tx_index_position+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getTransactionByBlockNumberAndIndex', methods = ['POST'])
@@ -256,14 +360,21 @@ def api_eth_getTransactionByBlockNumberAndIndex():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	block_parameter = payload[0]
 	tx_index_position = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getTransactionByBlockNumberAndIndex","params": ["'+block_parameter+'","'+tx_index_position+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getTransactionByHash', methods = ['POST'])
@@ -275,13 +386,20 @@ def api_eth_getTransactionByHash():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	tx_hash = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params": ["'+tx_hash+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getTransactionCount', methods = ['POST'])
@@ -293,14 +411,21 @@ def api_eth_getTransactionCount():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	address = payload[0]
 	block_parameter = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getTransactionCount","params": ["'+address+'","'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getTransactionReceipt', methods = ['POST'])
@@ -312,13 +437,20 @@ def api_eth_getTransactionReceipt():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	tx_hash = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","params": ["'+tx_hash+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getUncleByBlockHashAndIndex', methods = ['POST'])
@@ -330,14 +462,21 @@ def api_eth_getUncleByBlockHashAndIndex():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	block_hash = payload[0]
 	uncle_index_position = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getUncleByBlockHashAndIndex","params": ["'+block_hash+'","'+uncle_index_position+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getUncleByBlockNumberAndIndex', methods = ['POST'])
@@ -349,14 +488,21 @@ def api_eth_getUncleByBlockNumberAndIndex():
 	if len(payload) == 2:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 2'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 2'
+		})
+		return payload_error
 
 	block_parameter = payload[0]
 	uncle_index_position = payload[1]
 	data = '{"jsonrpc":"2.0","method":"eth_getUncleByBlockNumberAndIndex","params": ["'+block_parameter+'","'+uncle_index_position+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getUncleCountByBlockHash', methods = ['POST'])
@@ -368,13 +514,20 @@ def api_eth_getUncleCountByBlockHash():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	block_hash = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getUncleCountByBlockHash","params": ["'+block_hash+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getUncleCountByBlockNumber', methods = ['POST'])
@@ -386,13 +539,20 @@ def api_eth_getUncleCountByBlockNumber():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	block_parameter = payload[0]    
 	data = '{"jsonrpc":"2.0","method":"eth_getUncleCountByBlockNumber","params": ["'+block_parameter+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getWork', methods = ['POST'])
@@ -440,13 +600,20 @@ def api_eth_sendRawTransaction():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	tx_data = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params": ["'+tx_data+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_submitWork', methods = ['POST'])
@@ -458,15 +625,22 @@ def api_eth_submitWork():
 	if len(payload) == 3:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 3'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 3'
+		})
+		return payload_error
 
 	nonce = payload[0]
 	pow_hash = payload[1]
 	mix_digest = payload[2]
 	data = '{"jsonrpc":"2.0","method":"eth_submitWork","params": ["'+nonce+'","'+pow_hash+'","'+mix_digest+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_syncing', methods = ['POST'])
@@ -496,7 +670,11 @@ def api_eth_newFilter():
 	if len(payload) == 4:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 4'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 4'
+		})
+		return payload_error
 
 	fromBlock = payload[0]
 	toBlock = payload[1]
@@ -504,8 +682,11 @@ def api_eth_newFilter():
 	topics = payload[3]
 	data = '{"jsonrpc":"2.0","method":"eth_newFilter","params":[{"fromBlock":"'+fromBlock+'","toBlock":"'+toBlock+'","address":"'+address+'","topics":'+topics+'}],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_newPendingTransactionFilter', methods = ['POST'])
@@ -526,13 +707,20 @@ def api_eth_getFilterChanges():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	filter_id = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getFilterChanges","params": ["'+filter_id+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_getFilterLogs', methods = ['POST'])
@@ -544,13 +732,20 @@ def api_eth_getFilterLogs():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	filter_id = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_getFilterLogs","params": ["'+filter_id+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_uninstallFilter', methods = ['POST'])
@@ -562,13 +757,20 @@ def api_eth_uninstallFilter():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	filter_id = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_uninstallFilter","params": ["'+filter_id+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/eth_subscribe', methods = ['POST'])
@@ -585,13 +787,20 @@ def api_eth_unsubscribe():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	subscription_id = payload[0]
 	data = '{"jsonrpc":"2.0","method":"eth_unsubscribe","params": ["'+subscription_id+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/net_listening', methods = ['POST'])
@@ -639,13 +848,20 @@ def api_web3_sha3():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	sha3_data = payload[0]
 	data = '{"jsonrpc":"2.0","method":"web3_sha3","params": ["'+sha3_data+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/parity_subscribe', methods = ['POST'])
@@ -662,13 +878,20 @@ def api_parity_unsubscribe():
 	if len(payload) == 1:
 		print (payload)
 	else:
-		return 'Error: Received parameters count '+str(payload_count)+' do not match expected 1'
+		payload_error = jsonify({
+		'code': 1025,
+		'error': 'Received parameters count '+str(payload_count)+' do not match expected 1'
+		})
+		return payload_error
 
 	subscription_id = payload[0]
 	data = '{"jsonrpc":"2.0","method":"parity_unsubscribe","params": ["'+subscription_id+'"],"id":1}'
 
-	response = requests.post(url, headers=headers, data=data)
-	return response.json()
+	try:
+		response = requests.post(url, headers=headers, data=data)
+		return response.json()
+	except:
+		return bad_request_error
 
 
 @app.route('/xrs/parity_allTransactionHashes', methods = ['POST'])
@@ -689,6 +912,6 @@ def api_parity_allTransactions():
 	return response.json()
 
 
+# Web Server is listening on 0.0.0.0:5000
 if __name__ == '__main__':
-	#app.run()
-	app.run(host= '0.0.0.0')
+	app.run(host= '0.0.0.0', port= 5000)
