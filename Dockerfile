@@ -1,24 +1,29 @@
 # Build via docker:
-# docker build -t ethereum-webserver '/dir/of/app'
-# docker run -d --name eth-webserver -p 5000:5000 ethereum-webserver:latest
+# docker build -t ethereum-webserver .
+# docker run -d --name ethereum-webserver -p 80:80 ethereum-webserver:latest
 
-# Install Alpine Linux 3.10 with Python 3.8.0
-FROM python:alpine3.10
+# Install Python 3.7.0/Flask, uWSGI, Nginx
+FROM tiangolo/uwsgi-nginx-flask:python3.7
+
+#Set custom listen port
+#ENV LISTEN_PORT 8080
 
 # Update pip
 RUN pip install --upgrade pip
 
 # Make directory and set as working directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir -p /app
+WORKDIR /app
 
 # Install app dependencies from requirements.txt
-COPY requirements.txt /usr/src/app
+COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Bundle Python app source
-COPY ethereum.py /usr/src/app
+# Copy uwsgi.ini config file
+COPY uwsgi.ini /app
 
-# Expose port 5000 and run ethereum-webserver
-EXPOSE 5000
-CMD ["python", "/usr/src/app/ethereum.py"]
+# Bundle Python app source
+COPY ethereum.py /app
+
+# Expose port 80 or custom port
+EXPOSE 80
