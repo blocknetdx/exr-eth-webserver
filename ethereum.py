@@ -912,6 +912,6 @@ def api_parity_allTransactions():
 	return response.json()
 
 
-# Web Server is listening on 0.0.0.0:5000
+# Web Server is listening on 0.0.0.0:80
 if __name__ == '__main__':
-	app.run(host= '0.0.0.0', port= 5000)
+	app.run(host= '0.0.0.0', port= 80)
