@@ -3,13 +3,11 @@
 * For use with Blocknet's XRouter Proxy Container (https://hub.docker.com/r/blocknetdx/xrouterproxy/)
 * Nginx, uWSGI, Python, Flask container (https://github.com/tiangolo/uwsgi-nginx-flask-docker)
 
----
-
 # **Ethereum Web Server running through Blocknet's XRouter Proxy**
 
 ## **Prerequisite**
 
-* Parity of geth Ethereum Node ('archival node' is preferred, if 'full node' is used some calls will not work)
+* Parity or geth Ethereum Node ('archival node' is preferred, if 'full node' is used some calls will not work)
    * Infura support is available
 * Docker installed
 * Blocknet Service Node
