@@ -1,12 +1,20 @@
 # ethereum-webserver (Nginx & uWSGI)
 
 * For use with Blocknet's XRouter Proxy Container (https://hub.docker.com/r/blocknetdx/xrouterproxy/)
+* Nginx, uWSGI, Python, Flask container (https://github.com/tiangolo/uwsgi-nginx-flask-docker)
 
 ---
 
-# Docker Setup (Blocknet XRouter Proxy Container w/ Ethereum Web Server Container, Blocknet Service Node required)
+# **Ethereum Web Server running through Blocknet's XRouter Proxy**
 
-* Install Docker
+## **Prerequisite**
+
+* Parity of geth Ethereum Node ('archival node' is preferred, if 'full node' is used some calls will not work)
+   * Infura support is available
+* Docker installed
+* Blocknet Service Node
+
+## **Ethereum Web Server Setup**
 
 * Download .zip or use Git (https://github.com/Aderks/ethereum-webserver.git)
   * Extract locally
@@ -18,20 +26,22 @@
 * Open a CLI and change directory to where `ethereum-webserver` is located
 
 * Build image: `docker build -t ethereum-webserver .`
-  * Edit `ENV LISTEN_POST 8080` `EXPOSE 80` if you changed the port in ethereum.py `app.run(host= '0.0.0.0', port= 80)`
+  * Edit `ENV LISTEN_POST 8080` & `EXPOSE 80` if you changed the port in ethereum.py `app.run(host= '0.0.0.0', port= 80)`
 
 * Start etherum-webserver container: `docker run -d --name ethereum-webserver -p 80:80 ethereum-webserver:latest`
   * Change `-p 80:80` if port was changed in `ethereum.py`
   * Start container: `docker start ethereum-webserver`
   * Stop container: `docker stop ethereum-webserver`
-  
+
+## **Blocknet XRouter Proxy Setup**
+
+* Download xrouterproxy image: `docker pull blocknetdx/xrouterproxy:0.3.3` (or latest tag)
+
 * Create xrproxy container config `uwsgi.ini` and place in a directory that can be shared with the blocknetdx/xrouterproxy docker container
   * Edit config template `xrproxy_uwsgi.ini` from this repo to your local settings
     * Set `SERVICENODE_PRIVKEY=` (retrieve from `servicenodestatus`)
-    * Set `URL_CustomXCloudPlugin_HOSTIP=` and `URL_CustomXCloudPlugin_PORT=` to your local settings
-  * Rename `xrproxy_uwsgi.ini` to `uwsgi.ini`
-  
-* Download xrouterproxy image: `docker pull blocknetdx/xrouterproxy:0.3.3` (or latest tag)
+    * Set `URL_CustomXCloudPlugin_HOSTIP=` & `URL_CustomXCloudPlugin_PORT=` to your local settings
+  * Rename [xrproxy_uwsgi.ini](https://github.com/Aderks/ethereum-webserver/blob/master/xrproxy_uwsgi.ini) to `uwsgi.ini`
 
 * Start xrouterproxy container: `docker run -d --name xrproxy -p 9090:80 -v=/location/of/uwsgi/config/file/directory:/opt/uwsgi/conf blocknetdx/xrouterproxy:0.3.3`
   * Start container: `docker start xrproxy`
