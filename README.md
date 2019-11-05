@@ -10,6 +10,7 @@
 
 * Download .zip or use Git (https://github.com/Aderks/ethereum-webserver.git)
   * Extract locally
+  * Directory structure: `Dockerfile, ethereum.py, requirements.txt, uwsgi.ini`
   
 * Edit `ethereum.py` and point `url = 'http://[ip]:[port]'` to your Ethereum node
   * Infura support: `url = 'https://mainnet.infura.io/v3/<api_key>'`
@@ -20,13 +21,13 @@
   * Edit `ENV LISTEN_POST 8080` `EXPOSE 80` if you changed the port in ethereum.py `app.run(host= '0.0.0.0', port= 80)`
 
 * Start etherum-webserver container: `docker run -d --name ethereum-webserver -p 80:80 ethereum-webserver:latest`
-  * Change `-p 80:80` if port was changed in ethereum.py
+  * Change `-p 80:80` if port was changed in `ethereum.py`
   * Start container: `docker start ethereum-webserver`
   * Stop container: `docker stop ethereum-webserver`
   
 * Create xrproxy container config `uwsgi.ini` and place in a directory that can be shared with the blocknetdx/xrouterproxy docker container
   * Edit config template `xrproxy_uwsgi.ini` from this repo to your local settings
-  * Set `URL_CustomXCloudPlugin_HOSTIP` and `URL_CustomXCloudPlugin_PORT` to your local settings
+    * Set `URL_CustomXCloudPlugin_HOSTIP` and `URL_CustomXCloudPlugin_PORT` to your local settings
   * Rename `xrproxy_uwsgi.ini` to `uwsgi.ini`
   
 * Download xrouterproxy image: `docker pull blocknetdx/xrouterproxy:0.3.3` (or latest tag)
@@ -55,7 +56,7 @@
   
 * Run `ethereum.py` to start the Flask Web Server
 
-* cURL example: `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '[]' 127.0.0.1:5000/xrs/eth_blockNumber`
+* cURL example: `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '[]' 127.0.0.1:80/xrs/eth_blockNumber`
 
 ---
 
