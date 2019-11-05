@@ -27,7 +27,8 @@
   
 * Create xrproxy container config `uwsgi.ini` and place in a directory that can be shared with the blocknetdx/xrouterproxy docker container
   * Edit config template `xrproxy_uwsgi.ini` from this repo to your local settings
-    * Set `URL_CustomXCloudPlugin_HOSTIP` and `URL_CustomXCloudPlugin_PORT` to your local settings
+    * Set `SERVICENODE_PRIVKEY=` (retrieve from `servicenodestatus`)
+    * Set `URL_CustomXCloudPlugin_HOSTIP=` and `URL_CustomXCloudPlugin_PORT=` to your local settings
   * Rename `xrproxy_uwsgi.ini` to `uwsgi.ini`
   
 * Download xrouterproxy image: `docker pull blocknetdx/xrouterproxy:0.3.3` (or latest tag)
