@@ -24,7 +24,7 @@
   
 * Open a CLI and change directory to where `ethereum-webserver` is located
 
-* Build image: docker build --build-arg cores=8 -t ethereum-webserver .`
+* Build image: `docker build --build-arg cores=8 -t ethereum-webserver .`
   * Change `--build-arg cores=` to adjust # of processes
 
 * Run etherum-webserver container: `docker run -d --name ethereum-webserver -p 80:80 ethereum-webserver:latest`
