@@ -12,6 +12,8 @@
    * Infura support is available
 * Docker installed
 * Blocknet Service Node
+   * `blocknet.conf` requires `rpcallowip=0.0.0.0/0` or specifying individual subnets if 0.0.0.0/0 is too open
+* Open port 9090 or whichever port is exposed on the XRouter Proxy container
 
 ## **Ethereum Web Server Setup**
 
@@ -56,6 +58,9 @@
   * `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '["0xc94770007dda54cF92009BFF0dE90c06F603a09f","latest"]' 127.0.0.1:9090/xrs/eth_getBalance`
 
   * `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '[]' 127.0.0.1:9090/xrs/eth_blockNumber`
+  
+  * `curl -H "Accept: application/json" -H "Content-Type: application/json" -d '[]' [public_server_ip]:9090/xrs/eth_blockNumber`
+     * This will only work if port 9090 is open, and Blocknet `rpcallowip=` is set accordingly 
 
 ---
 
