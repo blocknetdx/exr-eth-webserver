@@ -1,15 +1,15 @@
 from flask import Flask, url_for, jsonify, request
 import requests
 import json
+import os
 app = Flask(__name__)
 
 app.config['JSON_SORT_KEYS'] = False
 
-# Ethereum Node RPC URL Eg. http://localhost:8545
-url = 'http://[ip]:[port]'
-
-# Accepts Infura URL API Endpoint
-#url = 'https://mainnet.infura.io/v3/<api_key>'
+# Set url ENV 'eurl' to your Ethereum Node RPC Endpoint
+# Eg: http://[ip]:[port]
+# Eg: Infura support https://mainnet.infura.io/v3/<api_key>
+url = os.environ['eurl']
 
 # All requests require this header
 headers = {'Content-Type': 'application/json',}
@@ -41,7 +41,7 @@ def unauthorized_error(error):
 		})
 	return response
 
-
+# API
 @app.route('/xrs/eth_accounts', methods = ['POST'])
 def api_eth_accounts():
 
