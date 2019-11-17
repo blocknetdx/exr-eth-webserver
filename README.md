@@ -21,15 +21,16 @@
   * Extract locally
   * Directory structure: `Dockerfile, ethereum.py, requirements.txt, start.sh`
   
-* Edit `ethereum.py` and point `url = 'http://[ip]:[port]'` to your Ethereum node
-  * Infura support: `url = 'https://mainnet.infura.io/v3/<api_key>'`
-  
 * Open a CLI and change directory to where `ethereum-webserver` is located
 
-* Build image: `docker build --build-arg cores=8 -t ethereum-webserver .`
-  * Change `--build-arg cores=` to adjust # of processes
+* Build image:
+  * If Ethereum RPC endpoint is localhost: `docker build --build-arg cores=8 -t ethereum-webserver .`
+  * If Ethereum RPC endpoint is not localhost: `docker build --build-arg cores=8 --build-arg url=http://[ip]:[port] -t ethereum-webserver .`
+  * If Ethereum RPC endpoint is Infura: `docker build --build-arg cores=8 --build-arg url=https://mainnet.infura.io/v3/<api_key> -t ethereum-webserver-test .`
+    * Change `--build-arg cores=` to adjust # of processes
 
 * Run etherum-webserver container: `docker run -d --name ethereum-webserver -p 80:80 ethereum-webserver:latest`
+  * To change the Ethereum RPC endpoint, add `-e eurl=http://[ip]:[port]` to the Docker run command
   
 * Quick commands:  
   * Start container: `docker start ethereum-webserver`
@@ -70,7 +71,7 @@
 * Download .zip or use Git (https://github.com/Aderks/ethereum-webserver.git)
   * Extract locally
   
-* Edit `ethereum.py` and point `url = 'http://[ip]:[port]'` to your Ethereum node
+* Edit `ethereum.py` and change `url = os.environ['eurl']` to `url = 'http://[ip]:[port]'` (Your Ethereum RPC endpoint)
   * Infura support: `url = 'https://mainnet.infura.io/v3/<api_key>'`
   
 * Install required dependencies: `pip install -r requirements.txt`

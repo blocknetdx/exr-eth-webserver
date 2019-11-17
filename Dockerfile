@@ -1,11 +1,17 @@
 # Build via docker:
-# docker build --build-arg cores=8 -t ethereum-webserver .
+# If Ethereum RPC endpoint is localhost: docker build --build-arg cores=8 -t ethereum-webserver .
+# If Ethereum RPC endpoint is not localhost: docker build --build-arg cores=8 --build-arg url=http://[ip]:[port] -t ethereum-webserver .
+# If Ethereum RPC endpoint is Infura: docker build --build-arg cores=8 --build-arg url=https://mainnet.infura.io/v3/<api_key> -t ethereum-webserver-test .
 # docker run -d --name ethereum-webserver -p 80:80 ethereum-webserver:latest
 
 FROM nginx
 
 ARG cores=1
 ENV ecores=$cores
+
+# Default Ethereum RPC endpoint is http://localhost:8545
+ARG url=http://localhost:8545
+ENV eurl=$url
 
 RUN apt update \
   && apt install -y --no-install-recommends \
