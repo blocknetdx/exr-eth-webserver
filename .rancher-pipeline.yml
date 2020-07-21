@@ -1,0 +1,8 @@
+stages:
+- name: Build
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: eth-webserver:${CICD_GIT_BRANCH}.${CICD_EXECUTION_SEQUENCE}
+notification: {}
