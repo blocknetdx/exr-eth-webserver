@@ -2,6 +2,8 @@ from flask import Flask, url_for, jsonify, request
 import requests
 import json
 import os
+import logging
+
 app = Flask(__name__)
 
 app.config['JSON_SORT_KEYS'] = False
@@ -13,6 +15,18 @@ url = os.environ['eurl']
 
 # All requests require this header
 headers = {'Content-Type': 'application/json',}
+
+# logging
+logging.basicConfig(level=logging.DEBUG,    #TODO: pull level from env
+                    format='%(asctime)s %(levelname)s - %(message)s',
+                    datefmt='[%Y-%m-%d:%H:%M:%S]')
+
+# disabled methods
+disallowed_methods = ['eth_accounts', 'db_putString', 'db_getString', 'db_putHex', 'db_getHex']
+
+
+logging.debug('### eurl value: {}'.format(url))
+logging.debug('### disabled methods: {}'.format(disallowed_methods))
 
 # Error Handling
 @app.errorhandler(400)
@@ -910,6 +924,46 @@ def api_parity_allTransactions():
 
 	response = requests.post(url, headers=headers, data=data)
 	return response.json()
+
+@app.route('/xrs/eth_pass', methods=['POST'])
+def eth_pass():
+    requestjson = request.json
+    logging.debug('requestjson: {}'.format(requestjson))
+    try:
+        payload = requestjson
+        method = payload['method']
+    except Exception as e:
+        payload = requestjson[0]
+        method = payload['method']
+ 
+    if method == 'passthrough' or method == 'eth_pass':
+        requestjson = payload['params']
+        method = payload['method']
+
+    if method in disallowed_methods:
+        return jsonify({
+            'code': 1026,
+            'error': 'Disallowed'
+        })
+
+    if 'jsonrpc' not in payload:
+        payload['jsonrpc'] = '2.0'
+    if 'id' not in payload:
+        payload['id'] = 1
+    if 'params' not in payload:
+        payload['params'] = []
+
+    data = json.dumps(payload)
+    logging.debug('headers: {}'.format(headers))
+    #print('data: {}'.format(data['params']))
+    response = requests.post(url, headers=headers, data=data)
+    logging.debug('response: {} headers: {} data: {} json: {}'.format(response, headers, data, response.json()))
+    return response.json()
+    # eth pass through
+    logging.info('passhthrough')
+    payload = request.json
+    logging.debug('payload: {}'.format(payload)) 
+    return payload
 
 
 # Web Server is listening on 0.0.0.0:80
