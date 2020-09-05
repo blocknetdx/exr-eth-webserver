@@ -953,6 +953,13 @@ def eth_pass():
     if 'params' not in payload:
         payload['params'] = []
 
+    if isinstance (requestjson, list):
+        payload = []
+        payload += requestjson
+        data = json.dumps(payload)
+    else:      
+        data = json.dumps(payload)
+
     data = json.dumps(payload)
     logging.debug('headers: {}'.format(headers))
     #print('data: {}'.format(data['params']))
