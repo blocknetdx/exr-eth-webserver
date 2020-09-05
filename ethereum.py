@@ -958,7 +958,8 @@ def eth_pass():
     #print('data: {}'.format(data['params']))
     response = requests.post(url, headers=headers, data=data)
     logging.debug('response: {} headers: {} data: {} json: {}'.format(response, headers, data, response.json()))
-    return response.json()
+    logging.debug('response.text: {}'.format(response.text))
+    return response.text
     # eth pass through
     logging.info('passhthrough')
     payload = request.json
