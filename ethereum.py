@@ -960,7 +960,6 @@ def eth_pass():
     else:      
         data = json.dumps(payload)
 
-    data = json.dumps(payload)
     logging.debug('headers: {}'.format(headers))
     #print('data: {}'.format(data['params']))
     response = requests.post(url, headers=headers, data=data)
