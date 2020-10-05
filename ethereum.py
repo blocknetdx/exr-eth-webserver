@@ -2,6 +2,8 @@ from flask import Flask, url_for, jsonify, request
 import requests
 import json
 import os
+import logging
+
 app = Flask(__name__)
 
 app.config['JSON_SORT_KEYS'] = False
@@ -10,9 +12,22 @@ app.config['JSON_SORT_KEYS'] = False
 # Eg: http://[ip]:[port]
 # Eg: Infura support https://mainnet.infura.io/v3/<api_key>
 url = os.environ['eurl']
-
+LOGLEVEL = os.environ.get('LOGLEVEL', 'WARNING').upper()
 # All requests require this header
 headers = {'Content-Type': 'application/json',}
+
+# logging
+
+logging.basicConfig(level=logging.LOGLEVEL,    #TODO: pull level from env
+                    format='%(asctime)s %(levelname)s - %(message)s',
+                    datefmt='[%Y-%m-%d:%H:%M:%S]')
+
+# disabled methods
+disallowed_methods = ['eth_accounts', 'db_putString', 'db_getString', 'db_putHex', 'db_getHex']
+
+
+logging.debug('### eurl value: {}'.format(url))
+logging.debug('### disabled methods: {}'.format(disallowed_methods))
 
 # Error Handling
 @app.errorhandler(400)
@@ -910,6 +925,46 @@ def api_parity_allTransactions():
 
 	response = requests.post(url, headers=headers, data=data)
 	return response.json()
+
+@app.route('/xrs/eth_pass', methods=['POST'])
+def eth_pass():
+    requestjson = request.json
+    logging.debug('requestjson: {}'.format(requestjson))
+    try:
+        payload = requestjson
+        method = payload['method']
+    except Exception as e:
+        payload = requestjson[0]
+        method = payload['method']
+ 
+    if method == 'passthrough' or method == 'eth_pass':
+        requestjson = payload['params']
+        method = payload['method']
+
+    if method in disallowed_methods:
+        return jsonify({
+            'code': 1026,
+            'error': 'Disallowed'
+        })
+
+    if 'jsonrpc' not in payload:
+        payload['jsonrpc'] = '2.0'
+    if 'id' not in payload:
+        payload['id'] = 1
+    if 'params' not in payload:
+        payload['params'] = []
+
+    if isinstance (requestjson, list):
+        payload = []
+        payload += requestjson
+        data = json.dumps(payload)
+    else:      
+        data = json.dumps(payload)
+
+    response = requests.post(url, headers=headers, data=data)
+    logging.debug('response: {} headers: {} data: {} json: {}'.format(response, headers, data, response.json()))
+    logging.debug('response.text: {}'.format(response.text))
+    return response.text
 
 
 # Web Server is listening on 0.0.0.0:80
